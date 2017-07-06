@@ -27,7 +27,7 @@ setup(
     packages=find_packages(include=path_in_project('dq_client*'), exclude=['tests*']),
     entry_points={
         'console_scripts': [
-            'queue = dq_client.work.cli:queue',
+            'queue = dq_client.cli:queue',
         ],
     },
     include_package_data=True,

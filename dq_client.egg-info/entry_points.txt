@@ -1,3 +1,3 @@
 [console_scripts]
-queue = dq_client.work.cli:queue
+queue = dq_client.cli:queue
 

@@ -1,13 +1,13 @@
-import asyncio
-from configparser import ConfigParser
-
 import os
+from ConfigParser import ConfigParser
 
-from dq_client.user.components.authentication import Credentials, Authentication
-from dq_client.user.components.cookie_keeper import CookieKeeper
-from dq_client.user.components.factory import UserFactory
-from dq_client.user.components.protocol import UserProtocol
-from dq_client.user.components.serializers import JsonSerializer, JsonDeserializer
+import trollius
+from dq_client.ws.factory import UserFactory
+
+from dq_client.services.authentication import Credentials, Authentication
+from dq_client.services.cookie_keeper import CookieKeeper
+from dq_client.services.serializers import JsonSerializer, JsonDeserializer
+from dq_client.ws.protocol import UserProtocol
 
 
 def conf(c):
@@ -30,8 +30,8 @@ def credentials(c):
 
 def cookie_keeper(c):
     return CookieKeeper(
-        secret_folder=c('conf')['other']['secret_folder'],
-        cookie_filename=c('conf')['other']['cookie_filename'],
+        secret_folder=c('conf').get('other', 'secret_folder'),
+        cookie_filename=c('conf').get('other', 'cookie_filename'),
     )
 
 
@@ -41,7 +41,7 @@ def auth(c):
 
 def factory(c):
     factory = UserFactory(
-        master_wss_uri=c('conf')['master']['wss_uri'],
+        broker_wss_uri=c('conf').get('broker', 'wss_uri'),
         headers=c('auth').get_headers(c('credentials'))
     )
     factory.protocol = c('protocol')
@@ -49,7 +49,7 @@ def factory(c):
 
 
 def loop(c):
-    loop = asyncio.get_event_loop()
+    loop = trollius.get_event_loop()
     loop.set_debug(True)
     return loop
 

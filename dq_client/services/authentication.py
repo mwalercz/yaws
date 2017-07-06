@@ -1,9 +1,8 @@
-from dq_client.user.components.cookie_keeper import CookieKeeper
-from dq_client.user.exceptions import NoCookieException
+from dq_client.exceptions import NoCookieException
 
 
 class Authentication(object):
-    def __init__(self, cookie_keeper: CookieKeeper, parent_pid):
+    def __init__(self, cookie_keeper, parent_pid):
         self.cookie_keeper = cookie_keeper
         self.parent_pid = parent_pid
 

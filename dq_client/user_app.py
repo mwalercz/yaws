@@ -3,7 +3,7 @@ import ssl
 
 from knot import Container
 
-from dq_client.user.dependencies import register
+from dq_client.dependencies import register
 
 
 def make_app(config_path, username, password):
@@ -18,8 +18,8 @@ def make_app(config_path, username, password):
 
     register(c)
     return UserApp(
-        host=c('conf')['master']['host'],
-        port=c('conf')['master']['port'],
+        host=c('conf').get('broker', 'host'),
+        port=c('conf').get('broker', 'port'),
         loop=c('loop'),
         factory=c('factory'),
     )

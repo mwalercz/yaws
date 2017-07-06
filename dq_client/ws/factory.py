@@ -2,7 +2,7 @@ from autobahn.asyncio import WebSocketClientFactory
 
 
 class UserFactory(WebSocketClientFactory):
-    def __init__(self, master_wss_uri, headers):
+    def __init__(self, broker_wss_uri, headers):
         WebSocketClientFactory.__init__(
-            self, master_wss_uri, headers=headers
+            self, broker_wss_uri, headers=headers
         )

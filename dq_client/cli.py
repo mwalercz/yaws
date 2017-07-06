@@ -1,13 +1,13 @@
 import getpass
-
-import click
 import os
 import sys
+
+import click
 from click import pass_context
 from click import prompt
-from dq_client.user.components.authentication import NoCookieException
+from dq_client.user_app import make_app
 
-from dq_client.user.user_app import make_app
+from dq_client.exceptions import NoCookieException
 
 
 @click.group()
