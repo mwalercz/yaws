@@ -13,25 +13,25 @@ def read_file(filename):
         return f.read()
 
 
-def read_requirements(filename):
-    contents = read_file(filename).strip('\n')
-    return contents.split('\n') if contents else []
+def read_reqs(filename):
+    lines = read_file(filename).strip('\n')
+    return lines.split('\n') if lines else []
 
 setup(
-    name="dq_client",
+    name="dq_cli",
     version="0.0.1",
     author="Maciej Walerczuk",
     author_email="mwalerczuk@gmail.com",
-    description="dq_client",
+    description="dq_cli",
     license="BSD",
-    packages=find_packages(include=path_in_project('dq_client*'), exclude=['tests*']),
+    packages=find_packages(include=path_in_project('dq_cli*'), exclude=['tests*']),
     entry_points={
         'console_scripts': [
-            'queue = dq_client.cli:queue',
+            'queue = dq_cli.cli:queue',
         ],
     },
     include_package_data=True,
-    install_requires=read_requirements('requirements.txt'),
-    tests_require=read_requirements('requirements_dev.txt'),
+    install_requires=read_reqs('requirements.txt'),
+    tests_require=read_reqs('requirements_dev.txt'),
     zip_safe=False,
 )

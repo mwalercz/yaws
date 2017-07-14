@@ -2,7 +2,6 @@ import os
 
 
 class CookieKeeper(object):
-    ENCODING = 'utf8'
 
     def __init__(self, secret_folder, cookie_filename):
         self._secret_folder = secret_folder
@@ -12,7 +11,7 @@ class CookieKeeper(object):
         user_filepath = self._get_user_filepath()
         if not os.path.exists(user_filepath):
             os.makedirs(user_filepath)
-        with open(self._get_cookie_filepath(), mode='w', encoding=self.ENCODING) as f:
+        with open(self._get_cookie_filepath(), mode='w') as f:
             f.write(cookie)
 
     def get_cookie(self):
@@ -20,7 +19,7 @@ class CookieKeeper(object):
         if not os.path.exists(cookie_filepath):
             return None
         else:
-            with open(cookie_filepath, encoding=self.ENCODING) as f:
+            with open(cookie_filepath) as f:
                 return f.readline().strip()
 
     def _get_cookie_filepath(self):

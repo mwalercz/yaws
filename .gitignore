@@ -1,4 +1,4 @@
-dq_client.egg-info.egg-info/*
+dq_cli.egg-info/*
 .idea/*
 .cache/*
 *pyc

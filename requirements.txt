@@ -1,4 +1,3 @@
-autobahn==0.16.0
 knot==0.4.0
+requests
 click
-trollius
