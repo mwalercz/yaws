@@ -2,18 +2,22 @@ from requests import Request
 from requests import Session
 
 
-class Requester:
-    def __init__(self, base_url, auth, cookie_keeper):
+class BrokerRequester:
+    def __init__(self, broker_url, auth, cookie_keeper):
         self.session = Session()
-        self.base_url = base_url
+        self.broker_url = broker_url
         self.auth = auth
         self.cookie_keeper = cookie_keeper
+        self.request = Request()
+        self.auth.add_headers(self.request)
 
-    def request(self, method, path, json=None, params=None):
-        url = self.base_url + path
-        request = Request(method=method, url=url, json=json, params=params)
-        self.auth.add_headers(request)
-        prepared_request = request.prepare()
+    def make_request(self, method, path, json=None, params=None):
+        url = self.broker_url + path
+        self.request.method = method
+        self.request.url = url
+        self.request.json = json
+        self.request.params = params
+        prepared_request = self.request.prepare()
         response = self.session.send(prepared_request, verify=False)
         cookie = response.cookies.get('DQ_SESSION')
         if cookie:

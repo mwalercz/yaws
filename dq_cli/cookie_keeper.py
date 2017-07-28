@@ -2,28 +2,15 @@ import os
 
 
 class CookieKeeper(object):
-
-    def __init__(self, secret_folder, cookie_filename):
-        self._secret_folder = secret_folder
-        self._cookie_filename = cookie_filename
+    def __init__(self, cookie_path):
+        self.cookie_path = cookie_path
 
     def save_cookie(self, cookie):
-        user_filepath = self._get_user_filepath()
-        if not os.path.exists(user_filepath):
-            os.makedirs(user_filepath)
-        with open(self._get_cookie_filepath(), mode='w') as f:
+        with open(self.cookie_path, mode='w') as f:
             f.write(cookie)
 
     def get_cookie(self):
-        cookie_filepath = self._get_cookie_filepath()
-        if not os.path.exists(cookie_filepath):
+        if not os.path.isfile(self.cookie_path):
             return None
-        else:
-            with open(cookie_filepath) as f:
-                return f.readline().strip()
-
-    def _get_cookie_filepath(self):
-        return os.path.join(self._get_user_filepath(), self._cookie_filename)
-
-    def _get_user_filepath(self):
-        return os.path.join(os.environ['HOME'], self._secret_folder)
+        with open(self.cookie_path, mode='r') as f:
+            return f.readline().strip()
