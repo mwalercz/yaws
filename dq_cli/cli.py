@@ -11,13 +11,17 @@ from dq_cli.exceptions import NoCookieException
 
 @click.group()
 @click.option(
-    '-l', '--login',
+    '-u', '--username',
+)
+@click.option(
+    '-p', '--password',
     is_flag=True
 )
 @pass_context
-def queue(ctx, login):
-    username = getpass.getuser()
-    if login:
+def queue(ctx, password, username):
+    if not username:
+        username = getpass.getuser()
+    if password:
         password = prompt(text='Password', hide_input=True)
     else:
         password = None
@@ -34,25 +38,32 @@ def queue(ctx, login):
         )
 
 
-@click.argument('command')
-@queue.command()
+@queue.group()
 @pass_context
-def work(ctx, command):
+def work(ctx):
+    pass
+
+
+@click.option('--cwd', default=os.getcwd())
+@click.option('-c', '--command', required=True)
+@work.command()
+@pass_context
+def new(ctx, command, cwd):
     c = ctx.obj
     c('controller').request(
         method='POST',
         path='/users/{username}/works'.format(username=c('username')),
         json={
             'command': command,
-            'cwd': os.getcwd()
+            'cwd': cwd,
         }
     )
 
 
 @click.argument('work_id')
-@queue.command()
+@work.command()
 @pass_context
-def kill(ctx, work_id):
+def cancel(ctx, work_id):
     c = ctx.obj
     c('controller').request(
         method='DELETE',
@@ -63,9 +74,9 @@ def kill(ctx, work_id):
     )
 
 
-@queue.command()
+@work.command()
 @pass_context
-def list(ctx):
+def query(ctx):
     c = ctx.obj
     c('controller').request(
         method='GET',
@@ -76,9 +87,9 @@ def list(ctx):
 
 
 @click.argument('work_id')
-@queue.command()
+@work.command()
 @pass_context
-def details(ctx, work_id):
+def get(ctx, work_id):
     c = ctx.obj
     c('controller').request(
         method='GET',
@@ -86,4 +97,31 @@ def details(ctx, work_id):
             username=c('username'),
             work_id=work_id
         )
+    )
+
+
+@queue.group()
+@pass_context
+def workers(ctx):
+    pass
+
+
+@workers.command()
+@pass_context
+def query(ctx):
+    c = ctx.obj
+    c('controller').request(
+        method='GET',
+        path='/workers'
+    )
+
+
+@click.argument('worker_id')
+@workers.command()
+@pass_context
+def get(ctx, worker_id):
+    c = ctx.obj
+    c('controller').request(
+        method='GET',
+        path='/workers/{}'.format(worker_id)
     )

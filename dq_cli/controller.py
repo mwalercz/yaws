@@ -14,6 +14,7 @@ class Controller:
     def request(self, method, path, json=None, params=None):
         try:
             response = self.requester.make_request(method, path, json, params)
+            click.echo('\nResponse:')
             click.echo(dumps(response.json(), indent=4, sort_keys=True))
         except HTTPError as exc:
             if exc.response.status_code == 401:
@@ -29,7 +30,8 @@ class Controller:
                 self._handle_unknown_error(exc)
         except ConnectionError as exc:
             click.echo(
-                'Server: "{}" is unavailable. Try again later. Maybe url is wrong?'.format(self.url)
+                'Server: "{}" is unavailable. '
+                'Try again later. Maybe url is wrong?'.format(self.url)
             )
         except RequestException as exc:
             self._handle_unknown_error(exc)

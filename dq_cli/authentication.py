@@ -1,3 +1,5 @@
+from requests.auth import HTTPBasicAuth
+
 from dq_cli.exceptions import NoCookieException
 
 
@@ -8,7 +10,9 @@ class Authentication(object):
 
     def add_headers(self, request):
         if self.credentials.are_correct():
-            request.headers = self.credentials.to_dict()
+            request.auth = HTTPBasicAuth(
+                self.credentials.username, self.credentials.password
+            )
             return
         cookie = self.cookie_keeper.get_cookie()
         if not cookie:

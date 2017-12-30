@@ -5,7 +5,7 @@ import shutil
 import urllib3
 from knot import Container
 
-from definitions import USER_CONFIG_PATH, USER_DQ_CLI_PATH, DEVELOP_CONFIG_PATH
+from definitions import USER_CONFIG_PATH, USER_QUEUE_PATH, DEVELOP_CONFIG_PATH
 from dq_cli.dependencies import register
 
 
@@ -41,8 +41,8 @@ def make_app(
 
 
 def copy_config_to_user_dir_if_not_present():
-    if not os.path.isdir(USER_DQ_CLI_PATH):
-        os.mkdir(USER_DQ_CLI_PATH, 0o700)
+    if not os.path.isdir(USER_QUEUE_PATH):
+        os.mkdir(USER_QUEUE_PATH, 0o700)
     if not os.path.isfile(USER_CONFIG_PATH):
         shutil.copyfile(src=DEVELOP_CONFIG_PATH, dst=USER_CONFIG_PATH)
         os.chmod(USER_CONFIG_PATH, 0o700)
