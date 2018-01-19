@@ -11,7 +11,8 @@ class Authentication(object):
     def add_headers(self, request):
         if self.credentials.are_correct():
             request.auth = HTTPBasicAuth(
-                self.credentials.username, self.credentials.password
+                self.credentials.username,
+                self.credentials.password
             )
             return
         cookie = self.cookie_keeper.get_cookie()

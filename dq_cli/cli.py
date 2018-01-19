@@ -40,28 +40,28 @@ def queue(ctx, password, username):
 
 @queue.group()
 @pass_context
-def work(ctx):
+def works(ctx):
     pass
 
 
-@click.option('--cwd', default=os.getcwd())
-@click.option('-c', '--command', required=True)
-@work.command()
+@click.option('-d', '--directory', default=os.getcwd())
+@click.argument('command')
+@works.command()
 @pass_context
-def new(ctx, command, cwd):
+def submit(ctx, command, directory):
     c = ctx.obj
     c('controller').request(
         method='POST',
         path='/users/{username}/works'.format(username=c('username')),
         json={
             'command': command,
-            'cwd': cwd,
+            'cwd': directory,
         }
     )
 
 
 @click.argument('work_id')
-@work.command()
+@works.command()
 @pass_context
 def cancel(ctx, work_id):
     c = ctx.obj
@@ -74,8 +74,9 @@ def cancel(ctx, work_id):
     )
 
 
-@work.command()
+@works.command()
 @pass_context
+@click.option('-s', '--status', multiple=True)
 def query(ctx):
     c = ctx.obj
     c('controller').request(
@@ -87,9 +88,9 @@ def query(ctx):
 
 
 @click.argument('work_id')
-@work.command()
+@works.command()
 @pass_context
-def get(ctx, work_id):
+def info(ctx, work_id):
     c = ctx.obj
     c('controller').request(
         method='GET',
@@ -119,7 +120,7 @@ def query(ctx):
 @click.argument('worker_id')
 @workers.command()
 @pass_context
-def get(ctx, worker_id):
+def info(ctx, worker_id):
     c = ctx.obj
     c('controller').request(
         method='GET',

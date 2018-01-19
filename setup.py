@@ -27,7 +27,7 @@ setup(
     packages=find_packages(include=path_in_project('dq_cli*'), exclude=['tests*']),
     entry_points={
         'console_scripts': [
-            'queue = dq_cli.cli:queue',
+            'yaws = dq_cli.cli:queue',
         ],
     },
     include_package_data=True,
