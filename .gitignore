@@ -2,3 +2,7 @@ dq_cli.egg-info/*
 .idea/*
 .cache/*
 *pyc
+build/*
+dist/*
+yaws.egg-info
+yaws.spec

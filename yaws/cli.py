@@ -3,27 +3,21 @@ import os
 
 import click
 from click import pass_context
-from click import prompt
 
-from dq_cli.app import init_app
-from dq_cli.exceptions import NoCookieException
+from yaws.app import init_app
+from yaws.exceptions import NoCookieException
 
 
 @click.group()
-@click.option(
-    '-u', '--username',
-)
-@click.option(
-    '-p', '--password',
-    is_flag=True
-)
+@click.option('-u', '--username')
+@click.option('-p', '--password', is_flag=True)
 @pass_context
-def queue(ctx, password, username):
+def yaws(ctx, username, password):
+    if password:
+        password = getpass.unix_getpass()
     if not username:
         username = getpass.getuser()
-    if password:
-        password = prompt(text='Password', hide_input=True)
-    else:
+    if not password:
         password = None
     try:
         ctx.obj = init_app(
@@ -31,14 +25,14 @@ def queue(ctx, password, username):
             password=password,
         )
     except NoCookieException:
-        password = prompt(text='Password', hide_input=True)
+        password = getpass.unix_getpass()
         ctx.obj = init_app(
             username=username,
             password=password,
         )
 
 
-@queue.group()
+@yaws.group()
 @pass_context
 def works(ctx):
     pass
@@ -52,7 +46,7 @@ def submit(ctx, command, directory):
     c = ctx.obj
     c('controller').request(
         method='POST',
-        path='/users/{username}/works'.format(username=c('username')),
+        path='/works',
         json={
             'command': command,
             'cwd': directory,
@@ -67,8 +61,7 @@ def cancel(ctx, work_id):
     c = ctx.obj
     c('controller').request(
         method='DELETE',
-        path='/users/{username}/works/{work_id}'.format(
-            username=c('username'),
+        path='/works/{work_id}'.format(
             work_id=work_id
         ),
     )
@@ -77,13 +70,15 @@ def cancel(ctx, work_id):
 @works.command()
 @pass_context
 @click.option('-s', '--status', multiple=True)
-def query(ctx):
+def query(ctx, status):
     c = ctx.obj
+    statuses = [
+        ('status', s) for s in status
+    ]
     c('controller').request(
         method='GET',
-        path='/users/{username}/works'.format(
-            username=c('username')
-        )
+        path='/works',
+        params=statuses
     )
 
 
@@ -94,14 +89,13 @@ def info(ctx, work_id):
     c = ctx.obj
     c('controller').request(
         method='GET',
-        path='/users/{username}/works/{work_id}'.format(
-            username=c('username'),
+        path='/works/{work_id}'.format(
             work_id=work_id
         )
     )
 
 
-@queue.group()
+@yaws.group()
 @pass_context
 def workers(ctx):
     pass
@@ -125,4 +119,36 @@ def info(ctx, worker_id):
     c('controller').request(
         method='GET',
         path='/workers/{}'.format(worker_id)
+    )
+
+
+@yaws.group()
+@pass_context
+def users(ctx):
+    pass
+
+
+@click.argument('username')
+@click.option('-a', '--is_admin', is_flag=True, default=False)
+@users.command()
+@pass_context
+def new(ctx, username, is_admin):
+    c = ctx.obj
+    c('controller').request(
+        method='POST',
+        path='/users',
+        json={
+            'username': username,
+            'is_admin': is_admin,
+        }
+    )
+
+
+@users.command()
+@pass_context
+def query(ctx):
+    c = ctx.obj
+    c('controller').request(
+        method='GET',
+        path='/users',
     )

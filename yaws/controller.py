@@ -14,13 +14,11 @@ class Controller:
     def request(self, method, path, json=None, params=None):
         try:
             response = self.requester.make_request(method, path, json, params)
-            click.echo('\nResponse:')
             click.echo(dumps(response.json(), indent=4, sort_keys=True))
         except HTTPError as exc:
             if exc.response.status_code == 401:
                 click.echo(
-                    'Wrong username/password or cookie is too old. '
-                    'Use --login option.'
+                    'Please provide correct password.'
                 )
             elif exc.response.status_code == 403:
                 click.echo(

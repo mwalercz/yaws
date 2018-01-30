@@ -19,7 +19,7 @@ class BrokerRequester:
         self.request.params = params
         prepared_request = self.request.prepare()
         response = self.session.send(prepared_request, verify=False)
-        cookie = response.cookies.get('DQ_SESSION')
+        cookie = response.cookies.get('YAWSM_SESSION')
         if cookie:
             self.cookie_keeper.save_cookie(cookie)
 

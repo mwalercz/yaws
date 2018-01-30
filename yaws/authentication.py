@@ -1,6 +1,6 @@
 from requests.auth import HTTPBasicAuth
 
-from dq_cli.exceptions import NoCookieException
+from yaws.exceptions import NoCookieException
 
 
 class Authentication(object):
@@ -19,7 +19,7 @@ class Authentication(object):
         if not cookie:
             raise NoCookieException()
 
-        request.cookies = {'DQ_SESSION': cookie}
+        request.cookies = {'YAWSM_SESSION': cookie}
 
 
 class Credentials(object):

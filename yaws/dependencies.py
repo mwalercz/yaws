@@ -1,10 +1,10 @@
 from ConfigParser import ConfigParser
 
 from definitions import USER_COOKIE_PATH
-from dq_cli.authentication import Credentials, Authentication
-from dq_cli.controller import Controller
-from dq_cli.cookie_keeper import CookieKeeper
-from dq_cli.requester import BrokerRequester
+from yaws.authentication import Credentials, Authentication
+from yaws.controller import Controller
+from yaws.cookie_keeper import CookieKeeper
+from yaws.requester import BrokerRequester
 
 
 def conf(c):
