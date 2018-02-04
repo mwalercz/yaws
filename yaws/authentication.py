@@ -1,25 +1,25 @@
 from requests.auth import HTTPBasicAuth
 
-from yaws.exceptions import NoCookieException
+from yaws.exceptions import NoCredentialsException
 
 
 class Authentication(object):
-    def __init__(self, cookie_keeper, credentials):
+    def __init__(self, cookie_keeper):
         self.cookie_keeper = cookie_keeper
-        self.credentials = credentials
 
-    def add_headers(self, request):
-        if self.credentials.are_correct():
-            request.auth = HTTPBasicAuth(
-                self.credentials.username,
-                self.credentials.password
-            )
-            return
+    def get_headers(self, credentials):
+        if credentials.seems_correct():
+            return {
+                'auth': HTTPBasicAuth(
+                    credentials.username,
+                    credentials.password
+                )
+            }
         cookie = self.cookie_keeper.get_cookie()
         if not cookie:
-            raise NoCookieException()
+            raise NoCredentialsException()
 
-        request.cookies = {'YAWSM_SESSION': cookie}
+        return {'cookies': {'YAWSM_SESSION': cookie}}
 
 
 class Credentials(object):
@@ -27,7 +27,7 @@ class Credentials(object):
         self.username = username
         self.password = password
 
-    def are_correct(self):
+    def seems_correct(self):
         return self.password and self.username
 
     def to_dict(self):

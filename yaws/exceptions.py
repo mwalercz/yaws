@@ -1,2 +1,2 @@
-class NoCookieException(Exception):
+class NoCredentialsException(Exception):
     pass

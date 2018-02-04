@@ -1,31 +1,26 @@
-import getpass
 import os
 
 import click
 from click import pass_context
 
 from yaws.app import make_app
-from yaws.exceptions import NoCookieException
 
 
 @click.group()
 @click.option('-u', '--username', default=None)
-@click.option('-p', '--password', is_flag=True, default=None)
 @pass_context
-def yaws(ctx, username, password):
-    if password:
-        password = getpass.unix_getpass()
-    try:
-        ctx.obj = make_app(
-            cli_username=username,
-            cli_password=password,
-        )
-    except NoCookieException:
-        password = getpass.unix_getpass()
-        ctx.obj = make_app(
-            cli_username=username,
-            cli_password=password,
-        )
+def yaws(ctx, username):
+    ctx.obj = make_app(
+        cli_username=username
+    )
+
+
+@click.argument('username')
+@yaws.command()
+@pass_context
+def switch_user(ctx, username):
+    c = ctx.obj
+    c('user_switcher').switch(username)
 
 
 @click.option('-d', '--directory', default=os.getcwd())

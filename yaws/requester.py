@@ -1,27 +1,27 @@
-from requests import Request
-from requests import Session
+import requests
 
 
 class BrokerRequester:
-    def __init__(self, broker_url, auth, cookie_keeper):
-        self.session = Session()
-        self.broker_url = broker_url
-        self.auth = auth
+    def __init__(self, url, auth, cookie_keeper):
         self.cookie_keeper = cookie_keeper
-        self.request = Request()
-        self.auth.add_headers(self.request)
+        self.url = url
+        self.auth = auth
 
-    def make_request(self, method, path, json=None, params=None):
-        url = self.broker_url + path
-        self.request.method = method
-        self.request.url = url
-        self.request.json = json
-        self.request.params = params
-        prepared_request = self.request.prepare()
-        response = self.session.send(prepared_request, verify=False)
+    def make_request(self, method, path, json=None, params=None, credentials=None):
+        args = dict(
+            method=method,
+            url=self.url + path,
+            json=json,
+            params=params,
+            verify=False,
+            **self.auth.get_headers(credentials)
+        )
+        response = requests.request(**args)
         cookie = response.cookies.get('YAWSM_SESSION')
         if cookie:
             self.cookie_keeper.save_cookie(cookie)
+        if response.status_code == 401:
+            self.cookie_keeper.remove_cookie()
 
         response.raise_for_status()
         return response

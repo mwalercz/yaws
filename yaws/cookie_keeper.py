@@ -14,3 +14,7 @@ class CookieKeeper(object):
             return None
         with open(self.cookie_path, mode='r') as f:
             return f.readline().strip()
+
+    def remove_cookie(self):
+        if os.path.isfile(self.cookie_path):
+            os.remove(self.cookie_path)
