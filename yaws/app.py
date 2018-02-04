@@ -1,46 +1,46 @@
+import getpass
 import logging
-import os
+from ConfigParser import ConfigParser
 
-import shutil
+
 import urllib3
 from knot import Container
 
-from definitions import USER_CONFIG_PATH, YAWS_PATH, DEVELOP_CONFIG_PATH
+from definitions import USER_CONFIG_PATH, DEVELOP_CONFIG_PATH
 from yaws.dependencies import register
 
 
-def init_app(
-        username,
-        password,
-):
-    return make_app(
-        config_path=USER_CONFIG_PATH,
-        username=username,
-        password=password,
-    )
-
-
 def make_app(
-        config_path=DEVELOP_CONFIG_PATH,
-        username=None,
-        password=None
+        config_path=USER_CONFIG_PATH,
+        cli_username=None,
+        cli_password=None
 ):
-    logging.basicConfig(
-        level=logging.INFO,
-    )
     urllib3.disable_warnings()  # ssl warning about certs
-    c = Container(dict(
-        config_path=config_path,
-        username=username,
-        password=password,
-    ))
+    conf = ConfigParser()
+    conf.read(config_path)
+    conf = dict(conf.items('yaws'))
+    usernames = (cli_username, conf.get('username'), getpass.getuser())
+    conf.update(
+        {
+            'username': next(
+                username for username in usernames
+                if username is not None
+            ),
+            'password': cli_password
+        }
+    )
+
+    c = Container(conf=conf)
     register(c)
-    c('controller')
     return c
 
 
 if __name__ == '__main__':
-    container = make_app(username='admin', password='admin')
+    container = make_app(
+        config_path=DEVELOP_CONFIG_PATH,
+        username='admin',
+        password='admin'
+    )
     container('controller').request(
         method='GET',
         path='/works',

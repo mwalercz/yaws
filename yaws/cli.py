@@ -4,43 +4,33 @@ import os
 import click
 from click import pass_context
 
-from yaws.app import init_app
+from yaws.app import make_app
 from yaws.exceptions import NoCookieException
 
 
 @click.group()
-@click.option('-u', '--username')
-@click.option('-p', '--password', is_flag=True)
+@click.option('-u', '--username', default=None)
+@click.option('-p', '--password', is_flag=True, default=None)
 @pass_context
 def yaws(ctx, username, password):
     if password:
         password = getpass.unix_getpass()
-    if not username:
-        username = getpass.getuser()
-    if not password:
-        password = None
     try:
-        ctx.obj = init_app(
-            username=username,
-            password=password,
+        ctx.obj = make_app(
+            cli_username=username,
+            cli_password=password,
         )
     except NoCookieException:
         password = getpass.unix_getpass()
-        ctx.obj = init_app(
-            username=username,
-            password=password,
+        ctx.obj = make_app(
+            cli_username=username,
+            cli_password=password,
         )
-
-
-@yaws.group()
-@pass_context
-def works(ctx):
-    pass
 
 
 @click.option('-d', '--directory', default=os.getcwd())
 @click.argument('command')
-@works.command()
+@yaws.command()
 @pass_context
 def submit(ctx, command, directory):
     c = ctx.obj
@@ -55,7 +45,7 @@ def submit(ctx, command, directory):
 
 
 @click.argument('work_id')
-@works.command()
+@yaws.command()
 @pass_context
 def cancel(ctx, work_id):
     c = ctx.obj
@@ -67,7 +57,7 @@ def cancel(ctx, work_id):
     )
 
 
-@works.command()
+@yaws.command()
 @pass_context
 @click.option('-s', '--status', multiple=True)
 def query(ctx, status):
@@ -83,7 +73,7 @@ def query(ctx, status):
 
 
 @click.argument('work_id')
-@works.command()
+@yaws.command()
 @pass_context
 def info(ctx, work_id):
     c = ctx.obj
@@ -101,9 +91,9 @@ def workers(ctx):
     pass
 
 
-@workers.command()
+@workers.command(name='query')
 @pass_context
-def query(ctx):
+def workers_query(ctx):
     c = ctx.obj
     c('controller').request(
         method='GET',
@@ -112,9 +102,9 @@ def query(ctx):
 
 
 @click.argument('worker_id')
-@workers.command()
+@workers.command(name='info')
 @pass_context
-def info(ctx, worker_id):
+def worker_info(ctx, worker_id):
     c = ctx.obj
     c('controller').request(
         method='GET',
@@ -130,9 +120,9 @@ def users(ctx):
 
 @click.argument('username')
 @click.option('-a', '--is_admin', is_flag=True, default=False)
-@users.command()
+@users.command(name='register')
 @pass_context
-def new(ctx, username, is_admin):
+def register_user(ctx, username, is_admin):
     c = ctx.obj
     c('controller').request(
         method='POST',
@@ -144,9 +134,9 @@ def new(ctx, username, is_admin):
     )
 
 
-@users.command()
+@users.command(name='query')
 @pass_context
-def query(ctx):
+def users_query(ctx):
     c = ctx.obj
     c('controller').request(
         method='GET',

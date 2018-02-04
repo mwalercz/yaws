@@ -7,18 +7,12 @@ from yaws.cookie_keeper import CookieKeeper
 from yaws.requester import BrokerRequester
 
 
-def conf(c):
-    conf = ConfigParser()
-    conf.read(c('config_path'))
-    return conf
-
-
 def broker_url(c):
-    return c('conf').get('broker', 'url')
+    return c('conf')['url']
 
 
 def credentials(c):
-    return Credentials(c('username'), c('password'))
+    return Credentials(c('conf')['username'], c('conf')['password'])
 
 
 def cookie_keeper(c):
@@ -50,7 +44,6 @@ def controller(c):
 
 
 def register(c):
-    c.add_service(conf)
     c.add_service(broker_url)
 
     c.add_service(credentials)
